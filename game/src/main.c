@@ -27,12 +27,12 @@ int main(void)
 		{
 			CreateBody();
 			
-			bodies->position = position;
-			bodies->velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
+			ncBodies->position = position;
+			ncBodies->velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
 		}
 
 		//Destroys bodies 
-		if (IsMouseButtonPressed(1) && bodies) DestroyBody(bodies);
+		if (IsMouseButtonPressed(1) && ncBodies) DestroyBody(ncBodies);
 
 		//render
 		BeginDrawing();
@@ -43,7 +43,7 @@ int main(void)
 		DrawCircle((int)position.x, (int)position.y, 15, YELLOW);
 		
 		// update / draw bodies
-		Body* body = bodies;
+		ncBody* body = ncBodies;
 		while (body)
 		{
 			// update body position
@@ -60,7 +60,7 @@ int main(void)
 	}
 	CloseWindow();
 
-	free(bodies);
+	free(ncBodies);
 
 	return 0;
 }

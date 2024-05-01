@@ -3,35 +3,35 @@
 #include <stdlib.h>
 #include <assert.h>
 
-Body* bodies = NULL;
-int bodyCount = 0;
+ncBody* ncBodies = NULL;
+int ncBodyCount = 0;
 
-Body* CreateBody()
+ncBody* CreateBody()
 {
 	//Allocate memory for a new Body using malloc.
-	Body* newBody = (Body*)malloc(sizeof(Body));
+	ncBody* newBody = (ncBody*)malloc(sizeof(ncBody));
 
 	//Assert that the allocation was successful.
 	assert(newBody);
 
 	//Set the new body’s prev pointer to NULL and its next pointer to the current head of the list (bodies).
 	newBody->prev = NULL;
-	newBody->next = &bodies[0];
+	newBody->next = &ncBodies[0];
 
 	//If the list is not empty, update the prev pointer of the current head.
-	if (bodies) bodies[0].prev = newBody;
+	if (ncBodies) ncBodies[0].prev = newBody;
 
 	//Set the bodies to the new Body
-	bodies = newBody;
+	ncBodies = newBody;
 
 	//Increment the bodyCount.
-	bodyCount++;
+	ncBodyCount++;
 
 	//Return the new Body.
 	return newBody;
 }
 
-void DestroyBody(Body* body)
+void DestroyBody(ncBody* body)
 {
 	//Assert that the given Body pointer is not NULL.
 	assert(body);
@@ -45,11 +45,11 @@ void DestroyBody(Body* body)
 	//If the body to be removed is the head of the list, update the head.
 	if (!body->prev)
 	{
-		bodies = bodies->next;
+		ncBodies = ncBodies->next;
 	}
 	
 	//Decrement the bodyCount.
-	bodyCount--;
+	ncBodyCount--;
 	//Free the memory allocated to the Body.
 	free(body);
 }
