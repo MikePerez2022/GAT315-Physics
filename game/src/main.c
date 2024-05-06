@@ -1,11 +1,9 @@
-#include "Body.h"
 #include "world.h"
 #include "mathf.h"
+#include "Integrator.h"
 #include "raylib.h"
-#include "raymath.h"
 
 #include <stdlib.h>
-#include <assert.h>
 
 #define MAX_BODIES 100
 
@@ -13,6 +11,9 @@ int main(void)
 {
 	InitWindow(1280, 720, "Physics Engine");
 	SetTargetFPS(60);
+
+	//initalize world
+	ncGravity = (Vector2){0, 30};
 
 	//game loop
 	while (!WindowShouldClose())
@@ -23,16 +24,38 @@ int main(void)
 
 		Vector2 position = GetMousePosition();
 		
-		if (IsMouseButtonPressed(0))
+		if (IsMouseButtonPressed(0)) 
 		{
-			CreateBody();
-			
-			ncBodies->position = position;
-			ncBodies->velocity = CreateVector2(GetRandomFloatValue(-5, 5), GetRandomFloatValue(-5, 5));
+			for (int i = 0; i < 15; i++)
+			{
+				ncBody* body = CreateBody();
+
+				//hue is the color | saturation is alpha | value is brightness
+				body->color = ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
+
+				body->position = position;
+				body->mass = GetRandomFloatValue(5, 10);
+				body->inverseMass = 1 / body->mass;
+				body->type = BT_DYNAMIC;
+				body->damping = 0.5f;
+				body->gravityScale = 20;
+				ApplyForce(body, (Vector2) { GetRandomFloatValue(-100, 100), GetRandomFloatValue(-100, 100) }, FM_VELOCITY);// might need to add second get rand value
+			}
 		}
 
-		//Destroys bodies 
-		if (IsMouseButtonPressed(1) && ncBodies) DestroyBody(ncBodies);
+		if (IsMouseButtonDown(1) && ncBodies) DestroyBody(ncBodies);
+
+
+		for (ncBody* body = ncBodies; body; body = body->next)
+		{
+			//ApplyForce(body, CreateVector2(0, -50), FM_FORCE);
+		}
+
+		//Update bodies
+		for (ncBody* body = ncBodies; body; body = body->next)
+		{
+			Step(body, dt);
+		}
 
 		//render
 		BeginDrawing();
@@ -41,19 +64,11 @@ int main(void)
 		DrawText(TextFormat("FRAME: %.4f", dt), 10, 30, 20, LIME);
 
 		DrawCircle((int)position.x, (int)position.y, 15, YELLOW);
-		
-		// update / draw bodies
-		ncBody* body = ncBodies;
-		while (body)
+
+		//Draw bodies
+		for (ncBody* body = ncBodies; body; body = body->next)
 		{
-			// update body position
-			body->position = Vector2Add(body->position, body->velocity);
-			
-			// draw body
-			DrawCircle(body->position.x, body->position.y, 10, RED);
-			
-			// get next body
-			body = body->next;
+			DrawCircle(body->position.x, body->position.y, body->mass, body->color);
 		}
 
 		EndDrawing();
