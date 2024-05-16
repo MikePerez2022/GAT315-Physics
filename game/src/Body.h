@@ -4,9 +4,9 @@
 
 typedef enum
 {
+	BT_DYNAMIC,
 	BT_STATIC,
-	BT_KINEMATIC,
-	BT_DYNAMIC
+	BT_KINEMATIC
 } ncBodyType;
 
 typedef enum
@@ -29,6 +29,8 @@ typedef struct ncBody
 	float inverseMass; // 1 / mass (static - 0)
 	float gravityScale;
 	float damping;
+
+	float restitution;
 
 	Color color;
 

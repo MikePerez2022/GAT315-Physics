@@ -1,6 +1,7 @@
 #pragma once
 #include "raylib.h"
 #include <stdlib.h>
+#include <corecrt_math.h>
 
 inline float GetRandomFloatValue01()
 {
@@ -15,4 +16,13 @@ inline float GetRandomFloatValue(float min, float max)
 inline Vector2 CreateVector2(float x, float y)
 {
 	return (Vector2){ x, y };
+}
+
+inline Vector2 GetVector2FromAngle(float angle)
+{
+	Vector2 v;
+	v.x = cosf(angle);
+	v.y = sinf(angle);
+
+	return v;
 }
