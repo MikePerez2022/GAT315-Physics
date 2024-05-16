@@ -44,18 +44,24 @@ int main(void)
 			DrawCircleLines((int)screen.x, (int)screen.y, ConvertWorldToPixel(selectedBody->mass) + 5, YELLOW);
 		}
 		
-		if (!ncEditorIntersect && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		if (!ncEditorIntersect)
 		{
-			float angle = GetRandomFloatValue(0, 360);
-			for (int i = 0; i < 1; i++)
+			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT)))
 			{
-				ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassValue, ncEditorData.BodyTypeActive);
-				
-				body->damping = ncEditorData.DampingValue;
-				body->gravityScale = ncEditorData.GravityScaleValue;
-				body->color = ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);//change this to white later
+				float angle = GetRandomFloatValue(0, 360);
+				for (int i = 0; i < 1; i++)
+				{
+					ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassValue, ncEditorData.BodyTypeActive);
+
+					body->damping = ncEditorData.DampingValue;
+					body->gravityScale = ncEditorData.GravityScaleValue;
+					body->color = WHITE;//ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
+					body->restitution = 0.8f;
+				}
 			}
 		}
+
+		
 
 		if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) connectBody = selectedBody;
 		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) DrawLineBodyToPosition(connectBody, position);
@@ -80,7 +86,8 @@ int main(void)
 		//collision
 		ncContact_t* contacts = NULL;
 		CreateContacts(ncBodies, &contacts);
-
+		SeparateContacts(contacts);
+		ResolveContacts(contacts);
 
 		//render
 		BeginDrawing();
@@ -112,7 +119,7 @@ int main(void)
 		for (ncContact_t* contact = contacts; contact; contact = contact->next)
 		{
 			Vector2 screen = ConvertWorldToScreen(contact->body1->position);
-			//DrawCircle((int)screen.x, (int)screen.y, ConvertWorldToPixel(contact->body1->mass * 0.5f), RED);
+			DrawCircle((int)screen.x, (int)screen.y, ConvertWorldToPixel(contact->body1->mass * 0.5f), RED);
 		}
 
 		DrawEditor(position);
