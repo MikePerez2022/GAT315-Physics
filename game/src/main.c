@@ -18,6 +18,10 @@ int main(void)
 {
 	ncBody* selectedBody = NULL;
 	ncBody* connectBody = NULL;
+	ncContact_t* contacts = NULL;
+
+	float fixedTimestep = 1.0f / 60;
+	float timeAccumulator = 0.02f;
 
 	InitWindow(1280, 720, "Physics Engine");
 	InitEditor();
@@ -34,6 +38,8 @@ int main(void)
 		Vector2 position = GetMousePosition();
 		ncScreenZoom += GetMouseWheelMove() * 0.2f;
 		ncScreenZoom = Clamp(ncScreenZoom, 0.1f, 10);
+
+		timeAccumulator += dt;
 
 		UpdateEditor(position);
 
@@ -73,21 +79,24 @@ int main(void)
 			}
 		}
 
-
-		ApplyGravitation(ncBodies, ncEditorData.GravitationValue * ncEditorData.GravityScaleValue);
-		ApplySpringForce(ncSprings);
-
-		//Update bodies
-		for (ncBody* body = ncBodies; body; body = body->next)
+		while (timeAccumulator >= fixedTimestep)
 		{
-			Step(body, dt);
-		}
+			timeAccumulator -= fixedTimestep;
+			ApplyGravitation(ncBodies, ncEditorData.GravitationValue * ncEditorData.GravityScaleValue);
+			ApplySpringForce(ncSprings);
 
-		//collision
-		ncContact_t* contacts = NULL;
-		CreateContacts(ncBodies, &contacts);
-		SeparateContacts(contacts);
-		ResolveContacts(contacts);
+			//Update bodies
+			for (ncBody* body = ncBodies; body; body = body->next)
+			{
+				Step(body, fixedTimestep);
+			}
+
+			//collision
+			DestroyAllContacts(&contacts);
+			CreateContacts(ncBodies, &contacts);
+			SeparateContacts(contacts);
+			ResolveContacts(contacts);
+		}
 
 		//render
 		BeginDrawing();

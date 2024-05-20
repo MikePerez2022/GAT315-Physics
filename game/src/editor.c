@@ -4,6 +4,8 @@
 #define RAYGUI_IMPLEMENTATION
 #include "../../raygui/src/raygui.h"
 
+#define EDITOR_DATA(data) TextFormat("%0.2f", data), &data
+
 bool ncEditorActive = true;
 bool ncEditorIntersect = false;
 ncEditorData_t ncEditorData;
@@ -55,12 +57,12 @@ void DrawEditor(Vector2 position)
         ncEditorData.EditorBoxActive = !GuiWindowBox(editorRect, "Editor");
         GuiGroupBox((Rectangle) { ncEditorData.anchor01.x + 20, ncEditorData.anchor01.y + 50, 264, 200 }, "Body");
         GuiGroupBox((Rectangle) { ncEditorData.anchor01.x + 20, ncEditorData.anchor01.y + 280, 264, 200 }, "World");
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 110, 130, 16 }, "Mass", TextFormat("%0.2f", ncEditorData.MassValue), & ncEditorData.MassValue, 0, 5);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 135, 130, 16 }, "Damping:", TextFormat("%0.2f", ncEditorData.DampingValue), & ncEditorData.DampingValue , 0, 10);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112,ncEditorData.anchor01.y + 160, 130, 16 }, "Gravity Scale:", TextFormat("%0.2f", ncEditorData.GravityScaleValue), & ncEditorData.GravityScaleValue, 0, 10);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112,ncEditorData.anchor01.y + 185, 130, 16 }, "Stiffness:", TextFormat("%0.2f", ncEditorData.StiffnessValue), & ncEditorData.StiffnessValue, 0, 50);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 300, 130, 16 }, "Gravity", TextFormat("%0.2f", ncEditorData.GravityValue), & ncEditorData.GravityValue, 0, 50);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 320, 130, 16 }, "Gravitation", TextFormat("%0.2f", ncEditorData.GravitationValue), & ncEditorData.GravitationValue, 0, 50);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 110, 130, 16 }, "Mass", EDITOR_DATA(ncEditorData.MassValue), 0, 5);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 135, 130, 16 }, "Damping:", EDITOR_DATA(ncEditorData.DampingValue), 0, 10);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112,ncEditorData.anchor01.y + 160, 130, 16 }, "Gravity Scale:", EDITOR_DATA(ncEditorData.GravityScaleValue), 0, 10);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112,ncEditorData.anchor01.y + 185, 130, 16 }, "Stiffness:", EDITOR_DATA(ncEditorData.StiffnessValue), 0, 50);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 300, 130, 16 }, "Gravity", EDITOR_DATA(ncEditorData.GravityValue), 0, 50);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 320, 130, 16 }, "Gravitation", EDITOR_DATA(ncEditorData.GravitationValue), 0, 50);
         if (GuiDropdownBox((Rectangle){ ncEditorData.anchor01.x + 35, ncEditorData.anchor01.y + 70, 240, 20 }, "DYNAMIC;STATIC;KINEMATIC", &ncEditorData.BodyTypeActive, ncEditorData.BodyTypeEditMode)) ncEditorData.BodyTypeEditMode = !ncEditorData.BodyTypeEditMode;
     }
 
