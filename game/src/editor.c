@@ -37,6 +37,10 @@ void InitEditor()
     //World
     ncEditorData.GravitationValue = 0.0f;
     ncEditorData.GravityValue = 0.0f;
+    ncEditorData.TimestepValue = 60;
+    ncEditorData.ResetBtnPressed = false;
+    ncEditorData.SimulateBtnPressed = false;
+
 
     editorRect = (Rectangle){ ncEditorData.anchor01.x + 0, ncEditorData.anchor01.y + 0, 304, 616 };
 }
@@ -61,8 +65,11 @@ void DrawEditor(Vector2 position)
         GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 135, 130, 16 }, "Damping:", EDITOR_DATA(ncEditorData.DampingValue), 0, 10);
         GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112,ncEditorData.anchor01.y + 160, 130, 16 }, "Gravity Scale:", EDITOR_DATA(ncEditorData.GravityScaleValue), 0, 10);
         GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112,ncEditorData.anchor01.y + 185, 130, 16 }, "Stiffness:", EDITOR_DATA(ncEditorData.StiffnessValue), 0, 50);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 300, 130, 16 }, "Gravity", EDITOR_DATA(ncEditorData.GravityValue), 0, 50);
-        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 320, 130, 16 }, "Gravitation", EDITOR_DATA(ncEditorData.GravitationValue), 0, 50);
+        GuiSlider((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 300, 130, 16 }, "Gravity", EDITOR_DATA(ncEditorData.GravityValue), 0, 50);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 325, 130, 16 }, "Gravitation", EDITOR_DATA(ncEditorData.GravitationValue), 0, 50);
+        GuiSliderBar((Rectangle) { ncEditorData.anchor01.x + 112, ncEditorData.anchor01.y + 350, 130, 16 }, "Timestep", EDITOR_DATA(ncEditorData.TimestepValue), 0, 100);
+        ncEditorData.ResetBtnPressed = GuiButton((Rectangle) { ncEditorData.anchor01.x + 50, ncEditorData.anchor01.y + 400, 100, 24}, "Reset");        
+        GuiToggle((Rectangle) { ncEditorData.anchor01.x + 160, ncEditorData.anchor01.y + 400, 100, 24 }, "Simulate", &ncEditorData.SimulateBtnPressed);
         if (GuiDropdownBox((Rectangle){ ncEditorData.anchor01.x + 35, ncEditorData.anchor01.y + 70, 240, 20 }, "DYNAMIC;STATIC;KINEMATIC", &ncEditorData.BodyTypeActive, ncEditorData.BodyTypeEditMode)) ncEditorData.BodyTypeEditMode = !ncEditorData.BodyTypeEditMode;
     }
 

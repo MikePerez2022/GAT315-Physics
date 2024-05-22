@@ -16,30 +16,32 @@
 
 int main(void)
 {
+	//Initalize
 	ncBody* selectedBody = NULL;
 	ncBody* connectBody = NULL;
 	ncContact_t* contacts = NULL;
-
-	float fixedTimestep = 1.0f / 60;
-	float timeAccumulator = 0.02f;
 
 	InitWindow(1280, 720, "Physics Engine");
 	InitEditor();
 	SetTargetFPS(60);
 
+	float fixedTimestep = 1.0f / ncEditorData.TimestepValue;
+	float timeAccumulator = 0.02f;
+
 	//game loop
 	while (!WindowShouldClose())
 	{
 		//update
-		float dt = GetFrameTime();
-		float fps = (float)GetFPS();
+		timeAccumulator += GetFrameTime();//add dt
+		//allows contol of timestep in gui
+		fixedTimestep = 1.0f / ncEditorData.TimestepValue;
 		ncGravity = (Vector2){ 0, -ncEditorData.GravityValue };
 
 		Vector2 position = GetMousePosition();
 		ncScreenZoom += GetMouseWheelMove() * 0.2f;
 		ncScreenZoom = Clamp(ncScreenZoom, 0.1f, 10);
 
-		timeAccumulator += dt;
+
 
 		UpdateEditor(position);
 
@@ -67,8 +69,7 @@ int main(void)
 			}
 		}
 
-		
-
+		//Connect spring
 		if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) connectBody = selectedBody;
 		if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) DrawLineBodyToPosition(connectBody, position);
 		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT) && connectBody)
@@ -79,8 +80,36 @@ int main(void)
 			}
 		}
 
+		//Unselect Body
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+		{
+			selectedBody = NULL;
+			connectBody = NULL;
+		}
+
+		//Drag Body
+		if (IsKeyDown(KEY_LEFT_ALT))
+		{
+			if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) connectBody = selectedBody;
+			if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) DrawLineBodyToPosition(connectBody, position);
+			if (connectBody)
+			{
+				Vector2 world = ConvertScreenToWorld(position);
+				ApplySpringForcePosition(world, connectBody, 0, 20, 5);
+			}
+		}
+
+		//Reset
+		if (ncEditorData.ResetBtnPressed)
+		{
+			DestroyAllSprings();
+			DestroyAllContacts(&contacts);
+			DestroyAllBodies();
+		}
+
 		while (timeAccumulator >= fixedTimestep)
 		{
+			if (!ncEditorData.SimulateBtnPressed) break;
 			timeAccumulator -= fixedTimestep;
 			ApplyGravitation(ncBodies, ncEditorData.GravitationValue * ncEditorData.GravityScaleValue);
 			ApplySpringForce(ncSprings);
@@ -103,8 +132,8 @@ int main(void)
 		ClearBackground(BLACK);
 
 		//Stats
-		DrawText(TextFormat("FPS: %.2f (%.2fms)", fps, 1000 / fps), 10, 10, 20, LIME);
-		DrawText(TextFormat("FRAME: %.4f", dt), 10, 30, 20, LIME);
+		DrawText(TextFormat("FPS: %.2f (%.2fms)", ncEditorData.TimestepValue, 1000 / ncEditorData.TimestepValue), 10, 10, 20, LIME);
+		DrawText(TextFormat("FRAME: %.4f", timeAccumulator), 10, 30, 20, LIME);
 
 		//DrawCircle((int)position.x, (int)position.y, 15, YELLOW);
 
@@ -121,7 +150,6 @@ int main(void)
 		{
 			Vector2 screen = ConvertWorldToScreen(body->position);
 			DrawCircle((int)screen.x, (int)screen.y, ConvertWorldToPixel(body->mass * 0.5f), body->color);
-			//DrawLineEx(body->pastPosition, body->position, body->mass, body->color);
 		}
 
 		//Draw contacts
